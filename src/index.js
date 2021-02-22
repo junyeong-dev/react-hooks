@@ -2,15 +2,27 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
 
+const useClick = (onClick) => {
+    const element = useRef();
+    useEffect(() => {
+        if(element.current){
+            element.current.addEventListener("click", onClick);
+        }
+        return () => {
+            if(element.current){
+                element.current.removerEventListener("click", onClick);
+            }
+        }
+    }, []);
+    return element;
+}
+
 const App = () => {
-  // useRef : reference는 document.getElementById 처럼 component의 어떤 부분을 선택할 수 있는 방법
-  // 변수명은 아무거나 상관 없음
-  const input = useRef();
-  setTimeout(() => input.current.focus(), 3000);
+  const sayHello = () => console.log("Hello");
+  const title = useClick(sayHello);
   return (
   <div className="App">
-      <h1>React Hooks useRef</h1>
-      <input ref={ input } placeholder="Reference" />
+      <h1 ref={ title }>React Hooks useClick</h1>
   </div>  
   );
 }
