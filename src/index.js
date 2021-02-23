@@ -2,27 +2,29 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
 
-const useClick = (onClick) => {
-    const element = useRef();
-    useEffect(() => {
-        if(element.current){
-            element.current.addEventListener("click", onClick);
+// 정확히 말하면 useConfirm은 hook은 아님
+const useConfirm = (message = "", callback, rejectionConfirm) => {
+    if(typeof callback !== "function"){
+        return;
+    }
+    const confirmAction = () => {
+        if(window.confirm(message)){
+            callback();
+        } else {
+            rejectionConfirm();
         }
-        return () => {
-            if(element.current){
-                element.current.removerEventListener("click", onClick);
-            }
-        }
-    }, []);
-    return element;
-}
+    }
+    return confirmAction;
+} 
 
 const App = () => {
-  const sayHello = () => console.log("Hello");
-  const title = useClick(sayHello);
+  const checkConfirm = () => console.log("useConfirm");
+  const rejectionConfirm = () => console.log("rejection");
+  const confirmFunction = useConfirm("This is useConfirm", checkConfirm, rejectionConfirm);
   return (
   <div className="App">
-      <h1 ref={ title }>React Hooks useClick</h1>
+      <h1>React Hooks useConfirm</h1>
+      <button onClick={ confirmFunction }>useConfirm</button>
   </div>  
   );
 }
