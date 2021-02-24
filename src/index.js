@@ -2,29 +2,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
 
-// 정확히 말하면 useConfirm은 hook은 아님
-const useConfirm = (message = "", callback, rejectionConfirm) => {
-    if(typeof callback !== "function"){
-        return;
-    }
-    const confirmAction = () => {
-        if(window.confirm(message)){
-            callback();
-        } else {
-            rejectionConfirm();
-        }
-    }
-    return confirmAction;
-} 
+// 이것도 useConfirm처럼 hook은 아님
+const usePreventLeave = () => {
+  const listener = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+  };
+  const enablePrevent = () => window.addEventListener("beforeunload", listener);
+  const disablePrevent = () => window.removeEventListener("beforeunload", listener);
+  return { enablePrevent, disablePrevent };
+}
 
 const App = () => {
-  const checkConfirm = () => console.log("useConfirm");
-  const rejectionConfirm = () => console.log("rejection");
-  const confirmFunction = useConfirm("This is useConfirm", checkConfirm, rejectionConfirm);
+  const { enablePrevent, disablePrevent } = usePreventLeave();
   return (
   <div className="App">
-      <h1>React Hooks useConfirm</h1>
-      <button onClick={ confirmFunction }>useConfirm</button>
+      <h1>React Hooks usePreventLeave</h1>
+      <button onClick={ enablePrevent }>Protect</button>
+      <button onClick={ disablePrevent }>Unprotect</button>
   </div>  
   );
 }
