@@ -2,24 +2,27 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
 
-// 이것도 useConfirm처럼 hook은 아님
-const usePreventLeave = () => {
-  const listener = (event) => {
-      event.preventDefault();
-      event.returnValue = "";
-  };
-  const enablePrevent = () => window.addEventListener("beforeunload", listener);
-  const disablePrevent = () => window.removeEventListener("beforeunload", listener);
-  return { enablePrevent, disablePrevent };
+// 기본적으로 웹페이지의 화면을 벗어날 때(북마크바나 주소창 등등) 실행되는 function
+const useBeforeLeave = (onBefore) => {
+    const handle = (event) => {
+        const { clientY } = event;
+        if(clientY <= 0) {
+            onBefore();
+        }
+    }
+    useEffect(() => {
+        document.addEventListener("mouseleave",handle);
+        return () => document.removeEventListener("mouseleave",handle);
+    }, []);
 }
 
 const App = () => {
-  const { enablePrevent, disablePrevent } = usePreventLeave();
+  const beforeMouse = () => console.log("Good bye");
+  useBeforeLeave(beforeMouse);
   return (
   <div className="App">
-      <h1>React Hooks usePreventLeave</h1>
-      <button onClick={ enablePrevent }>Protect</button>
-      <button onClick={ disablePrevent }>Unprotect</button>
+      <h1>React Hooks useBeforeLeave</h1>
+      
   </div>  
   );
 }
