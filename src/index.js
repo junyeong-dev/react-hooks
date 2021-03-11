@@ -2,36 +2,26 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
 
-// useNetwork - navigator가 online 또는 offline이 되는걸 막아줌
-const useNetwork = (onChange) => {
-    const [status, setStatus] = useState(navigator.onLine);
-    const handleChange = () => {
-        if(onChange === "function"){
-            onchange(navigator.onLine);
-        }
-        setStatus(navigator.onLine);
+const useScroll = () => {
+    const [state, setState] = useState({
+        x: 0,
+        y: 0
+    });
+    const onScroll = () => {
+        setState({x: window.scrollX, y: window.scrollY});
     }
     useEffect(() => {
-        window.addEventListener("online", handleChange);
-        window.addEventListener("offline", handleChange);
-        return () => {
-            window.removeEventListener("online", handleChange);
-            window.removeEventListener("offline", handleChange);
-        }
+        window.addEventListener("scroll", onScroll);
+        return () => window.removeEventListener("scroll", onScroll);
     }, []);
-    return status;
-};
-
+    return state;
+}
 
 const App = () => {
-  const handleNetworkChange = (online) => {
-      console.log(online ? "Online" : "Offline");
-  }
-  const onLine = useNetwork(handleNetworkChange);
+  const { y } = useScroll();
   return (
-  <div className="App">
-      <h1>React Hooks useNetwork</h1>
-      <h1>{ onLine ? "Online" : "Offline" }</h1>
+  <div className="App" style={{  height: "1000vh" }}>
+      <h1 style={{ position: 'fixed', color: y > 100 ? "red" : "blue" }}>React Hooks useScroll</h1>
   </div>  
   );
 }
