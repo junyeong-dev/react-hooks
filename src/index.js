@@ -2,46 +2,34 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
 
-const useFullscreen = (callback) => {
-    const element = useRef();
-    const runCallBack = isFull => {
-        if(callback && typeof callback === "function") {
-            callback(isFull);
-        }
-    };
-    const triggerFullScreen = () => {
-        console.log("trigger");
+const useNotification = (title, options) => {
+    if (!("Notification" in window)) {
+        return;
+    }
 
-        if(element.current) {
-            element.current.requestFullscreen();
-            if(callback && typeof callback === "function") {
-                runCallBack(true);
-            }
+    // Notification API를 통해 구현
+    const triggerNotification = () => {
+        if(Notification.permission !== "granted") {
+            Notification.requestPermission().then(permission => {
+                if(permission === "granted") {
+                    new Notification(title, options);
+                } else {
+                    return;
+                }
+            });
+        } else {
+            new Notification(title, options);
         }
     };
-    const exitFull = () => {
-        if(callback && typeof callback === "function") {
-            document.exitFullscreen();
-            runCallBack(false);
-        }
-    };
-    return { element, triggerFullScreen, exitFull };
+    return triggerNotification;
 }
 
 const App = () => {
-  const [fullCheck, setFullCheck] = useState(false);
-  const onFullScreen = (isFull) => {
-    setFullCheck(isFull);
-  }
-  const { element, triggerFullScreen, exitFull } = useFullscreen(onFullScreen);
+  const triggerNotification = useNotification("Notification", {body: "Notificion body"});
   return (
-  <div className="App" style={{ height: "1000vh" }}>
-      <h1>React Hooks useFullscreen</h1>
-      <div ref={ element }>
-        <img src="https://cdn.pixabay.com/photo/2018/06/10/13/41/rice-terraces-3466518_960_720.jpg" />
-        <button onClick={ fullCheck && exitFull  }>Exit Fullscreen</button>
-      </div>
-      <button onClick={ triggerFullScreen }>Fullscreen</button>
+  <div className="App">
+      <h1>React Hooks useNotification</h1>
+      <button onClick={ triggerNotification }>Notificataion</button>
   </div>  
   );
 }
