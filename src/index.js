@@ -1,35 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
-
-const useNotification = (title, options) => {
-    if (!("Notification" in window)) {
-        return;
-    }
-
-    // Notification API를 통해 구현
-    const triggerNotification = () => {
-        if(Notification.permission !== "granted") {
-            Notification.requestPermission().then(permission => {
-                if(permission === "granted") {
-                    new Notification(title, options);
-                } else {
-                    return;
-                }
-            });
-        } else {
-            new Notification(title, options);
-        }
-    };
-    return triggerNotification;
-}
+import useAxios from './useAxios';
 
 const App = () => {
-  const triggerNotification = useNotification("Notification", {body: "Notificion body"});
+  const { loading, error, data } = useAxios({ url: "https://yts.am/api/v2/list_movies.json" });
+  console.log(loading, error, data);
   return (
   <div className="App">
-      <h1>React Hooks useNotification</h1>
-      <button onClick={ triggerNotification }>Notificataion</button>
+      <h1>React Hooks useAxios</h1>
   </div>  
   );
 }
