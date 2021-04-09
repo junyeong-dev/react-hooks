@@ -4,11 +4,12 @@ import './App.css';
 import useAxios from './useAxios';
 
 const App = () => {
-  const { loading, error, data } = useAxios({ url: "https://yts.am/api/v2/list_movies.json" });
+  const { loading, data, error, refetch } = useAxios({ url: "https://yts.am/api/v2/list_movies.json" });
   console.log(loading, error, data);
   return (
   <div className="App">
       <h1>React Hooks useAxios</h1>
+      <button onClick={ refetch }>Refetch</button>
   </div>  
   );
 }
